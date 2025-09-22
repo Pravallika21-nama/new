@@ -1,0 +1,2069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍕 Pizza Delivery App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: backgroundShift 20s ease-in-out infinite;
+        }
+
+        @keyframes backgroundShift {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            25% { transform: translateX(-10px) translateY(-5px); }
+            50% { transform: translateX(10px) translateY(5px); }
+            75% { transform: translateX(-5px) translateY(10px); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 50px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(255,255,255,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+            animation: headerFloat 6s ease-in-out infinite;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #e74c3c, #c0392b, #e74c3c, #c0392b);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(231, 76, 60, 0.05) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes headerFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            color: #e74c3c;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.1),
+                0 0 20px rgba(231, 76, 60, 0.3);
+            font-weight: 900;
+            position: relative;
+            z-index: 2;
+            animation: titleGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 2px 2px 4px rgba(0,0,0,0.1), 0 0 20px rgba(231, 76, 60, 0.3); }
+            50% { text-shadow: 2px 2px 4px rgba(0,0,0,0.1), 0 0 30px rgba(231, 76, 60, 0.5); }
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.4rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 2;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .nav {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(255,255,255,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: navShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes navShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 35px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 8px 25px rgba(231, 76, 60, 0.3),
+                0 0 0 1px rgba(255,255,255,0.1);
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 
+                0 15px 35px rgba(231, 76, 60, 0.4),
+                0 0 0 1px rgba(255,255,255,0.2);
+        }
+
+        .nav-btn:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            box-shadow: 
+                0 10px 30px rgba(44, 62, 80, 0.4),
+                0 0 0 1px rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(248,249,250,0.9) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(255,255,255,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            min-height: 600px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(231, 76, 60, 0.03) 0%, transparent 70%);
+            animation: contentGlow 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes contentGlow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        .section {
+            display: none;
+            animation: sectionSlideIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 2;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes sectionSlideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(30px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .form-container {
+            max-width: 550px;
+            margin: 40px auto;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.8) 100%);
+            backdrop-filter: blur(15px);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(255,255,255,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #e74c3c, #c0392b, #e74c3c);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #333;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 25px;
+            border: 2px solid rgba(225, 229, 233, 0.8);
+            border-radius: 15px;
+            font-size: 16px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(248, 249, 250, 0.8);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #e74c3c;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 
+                0 0 0 4px rgba(231, 76, 60, 0.1),
+                0 8px 25px rgba(231, 76, 60, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .form-input:hover {
+            border-color: #c0392b;
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 
+                0 10px 30px rgba(231, 76, 60, 0.3),
+                0 0 0 1px rgba(255,255,255,0.1);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 
+                0 15px 40px rgba(231, 76, 60, 0.4),
+                0 0 0 1px rgba(255,255,255,0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(-2px) scale(1.01);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .pizza-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .pizza-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.8) 100%);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 
+                0 15px 30px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(255,255,255,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pizza-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #e74c3c, #c0392b, #e74c3c);
+            background-size: 200% 100%;
+            animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        .pizza-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.15),
+                0 0 0 1px rgba(255,255,255,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+
+        .pizza-image {
+            height: 200px;
+            background: linear-gradient(45deg, #ffeaa7, #fab1a0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .pizza-category {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pizza-info {
+            padding: 20px;
+        }
+
+        .pizza-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .pizza-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .pizza-price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+
+        .add-to-cart {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 12px 35px rgba(231, 76, 60, 0.4),
+                0 0 0 1px rgba(255,255,255,0.2);
+        }
+
+        /* Enhanced Pizza Image Styling */
+        .pizza-image {
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 10px 25px rgba(0,0,0,0.1),
+                inset 0 1px 0 rgba(255,255,255,0.3);
+        }
+
+        .pizza-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pizzaGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes pizzaGlow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        /* Floating Particles Animation */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(231, 76, 60, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+
+        .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 20%; animation-delay: 2s; }
+        .particle:nth-child(3) { left: 30%; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 40%; animation-delay: 6s; }
+        .particle:nth-child(5) { left: 50%; animation-delay: 8s; }
+        .particle:nth-child(6) { left: 60%; animation-delay: 10s; }
+        .particle:nth-child(7) { left: 70%; animation-delay: 12s; }
+        .particle:nth-child(8) { left: 80%; animation-delay: 14s; }
+        .particle:nth-child(9) { left: 90%; animation-delay: 16s; }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .pizza-category {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pizza-name {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .pizza-price {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .add-to-cart {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 
+                0 8px 25px rgba(231, 76, 60, 0.3),
+                0 0 0 1px rgba(255,255,255,0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-to-cart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .add-to-cart:hover::before {
+            left: 100%;
+        }
+
+        .custom-pizza {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .custom-section {
+            margin-bottom: 25px;
+        }
+
+        .custom-section h3 {
+            color: #e74c3c;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .option-card {
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .option-card:hover {
+            border-color: #e74c3c;
+            background: #ffeaa7;
+        }
+
+        .option-card.selected {
+            border-color: #e74c3c;
+            background: #ffeaa7;
+        }
+
+        .option-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .option-price {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .cart-summary {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .cart-total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .checkout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background: #c0392b;
+        }
+
+        .order-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #e74c3c;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-number {
+            font-weight: bold;
+            color: #e74c3c;
+            font-size: 1.2rem;
+        }
+
+        .order-status {
+            background: #e74c3c;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .order-items {
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .order-total {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .admin-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .inventory-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e1e5e9;
+        }
+
+        .inventory-item.low-stock {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .inventory-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .inventory-stock {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .low-stock-alert {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .pizza-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="floating-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🍕 Pizza Delivery App</h1>
+            <p>Order delicious pizzas online and get them delivered to your doorstep</p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('home')">🏠 Home</button>
+                <button class="nav-btn" onclick="showSection('login')" id="login-btn">🔐 Login</button>
+                <button class="nav-btn" onclick="showSection('register')" id="register-btn">📝 Register</button>
+                <button class="nav-btn" onclick="showSection('admin-login')" id="admin-login-btn">⚙️ Admin Login</button>
+                <button class="nav-btn" onclick="showSection('menu')" id="menu-btn" style="display: none;">🍕 Menu</button>
+                <button class="nav-btn" onclick="showSection('custom')" id="custom-btn" style="display: none;">🎨 Custom Pizza</button>
+                <button class="nav-btn" onclick="showSection('cart')" id="cart-btn" style="display: none;">🛒 Cart</button>
+                <button class="nav-btn" onclick="showSection('orders')" id="orders-btn" style="display: none;">📋 Orders</button>
+                <button class="nav-btn" onclick="showSection('admin')" id="admin-btn" style="display: none;">⚙️ Admin</button>
+                <button class="nav-btn" onclick="logout()" id="logout-btn" style="display: none;">🚪 Logout</button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Login Section -->
+            <div id="login" class="section">
+                <h2 style="text-align: center; color: #e74c3c; margin-bottom: 10px; font-size: 2.5rem;">🔐 Login</h2>
+                <p style="text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 30px;">Welcome back! Please sign in to continue.</p>
+                
+                <div class="form-container">
+                    <form id="login-form" onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label class="form-label">📧 Email Address</label>
+                            <input type="email" id="login-email" class="form-input" required 
+                                   placeholder="Enter your email address">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">🔒 Password</label>
+                            <input type="password" id="login-password" class="form-input" required 
+                                   placeholder="Enter your password">
+                        </div>
+                        
+                        <div style="text-align: right; margin-bottom: 25px;">
+                            <a href="#" onclick="showSection('forgot-password')" style="color: #e74c3c; text-decoration: none; font-weight: 600;">
+                                Forgot Password?
+                            </a>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary" style="margin-bottom: 25px;">
+                            🚀 Login to Account
+                        </button>
+                        
+                        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e1e5e9;">
+                            <span style="color: #6c757d; font-size: 16px;">Don't have an account? </span>
+                            <a href="#" onclick="showSection('register')" style="color: #e74c3c; text-decoration: none; font-weight: bold; font-size: 16px;">
+                                Create Account
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Register Section -->
+            <div id="register" class="section">
+                <h2 style="text-align: center; color: #e74c3c; margin-bottom: 10px; font-size: 2.5rem;">📝 Create Account</h2>
+                <p style="text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 30px;">Join us and start ordering delicious pizzas!</p>
+                
+                <div class="form-container">
+                    <form id="register-form" onsubmit="handleRegister(event)">
+                        <div class="form-group">
+                            <label class="form-label">👤 Full Name</label>
+                            <input type="text" id="register-name" class="form-input" required 
+                                   placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">📧 Email Address</label>
+                            <input type="email" id="register-email" class="form-input" required 
+                                   placeholder="Enter your email address">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">📱 Phone Number</label>
+                            <input type="tel" id="register-phone" class="form-input" required 
+                                   placeholder="Enter your phone number">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">🔒 Password</label>
+                            <input type="password" id="register-password" class="form-input" required 
+                                   placeholder="Enter your password (min 6 characters)">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">🔒 Confirm Password</label>
+                            <input type="password" id="register-confirm-password" class="form-input" required 
+                                   placeholder="Confirm your password">
+                        </div>
+                        
+                        <button type="submit" class="btn-primary" style="margin-bottom: 25px;">
+                            🎉 Create My Account
+                        </button>
+                        
+                        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e1e5e9;">
+                            <span style="color: #6c757d; font-size: 16px;">Already have an account? </span>
+                            <a href="#" onclick="showSection('login')" style="color: #e74c3c; text-decoration: none; font-weight: bold; font-size: 16px;">
+                                Login Here
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Admin Login Section -->
+            <div id="admin-login" class="section">
+                <h2 style="text-align: center; color: #e74c3c; margin-bottom: 10px; font-size: 2.5rem;">⚙️ Admin Login</h2>
+                <p style="text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 30px;">Access the admin dashboard to manage orders and inventory.</p>
+                
+                <div class="form-container">
+                    <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+                        <div class="form-group">
+                            <label class="form-label">📧 Admin Email</label>
+                            <input type="email" id="admin-email" class="form-input" required 
+                                   placeholder="Enter admin email address">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">🔒 Admin Password</label>
+                            <input type="password" id="admin-password" class="form-input" required 
+                                   placeholder="Enter admin password">
+                        </div>
+                        
+                        <button type="submit" class="btn-primary" style="margin-bottom: 25px;">
+                            🚀 Access Admin Dashboard
+                        </button>
+                        
+                        <div style="text-align: center; padding-top: 20px; border-top: 1px solid #e1e5e9;">
+                            <span style="color: #6c757d; font-size: 16px;">Regular user? </span>
+                            <a href="#" onclick="showSection('login')" style="color: #e74c3c; text-decoration: none; font-weight: bold; font-size: 16px;">
+                                User Login
+                            </a>
+                        </div>
+                        
+                        <div style="background: #e8f4fd; padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 4px solid #3498db;">
+                            <h4 style="color: #2980b9; margin-bottom: 10px;">🔑 Demo Admin Credentials:</h4>
+                            <p style="color: #2980b9; margin: 0; font-size: 14px;">
+                                <strong>Email:</strong> admin@pizzadelivery.com<br>
+                                <strong>Password:</strong> admin123
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Forgot Password Section -->
+            <div id="forgot-password" class="section">
+                <h2>Forgot Password? 🔑</h2>
+                <p>Enter your email address and we'll send you a link to reset your password.</p>
+                
+                <div style="max-width: 400px; margin: 30px auto;">
+                    <form id="forgot-form" onsubmit="handleForgotPassword(event)">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #333;">Email</label>
+                            <input type="email" id="forgot-email" required 
+                                   style="width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 16px;"
+                                   placeholder="Enter your email">
+                        </div>
+                        
+                        <button type="submit" style="width: 100%; padding: 12px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 20px;">
+                            Send Reset Link
+                        </button>
+                        
+                        <div style="text-align: center;">
+                            <a href="#" onclick="showSection('login')" style="color: #e74c3c; text-decoration: none;">
+                                Back to Login
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Email Verification Section -->
+            <div id="email-verification" class="section">
+                <h2>Email Verification 📧</h2>
+                <div id="verification-message" style="text-align: center; padding: 20px;">
+                    <div style="font-size: 3rem; margin-bottom: 20px;">📧</div>
+                    <h3>Check Your Email</h3>
+                    <p>We've sent a verification link to your email address. Please check your inbox and click the link to verify your account.</p>
+                    <p style="margin-top: 20px; color: #666;">Didn't receive the email? <a href="#" onclick="resendVerification()" style="color: #e74c3c;">Resend verification email</a></p>
+                </div>
+            </div>
+
+            <!-- Home Section -->
+            <div id="home" class="section active">
+                <h2 id="home-welcome">Welcome to Pizza Delivery! 👋</h2>
+                <p id="home-message">Choose from our delicious pizza menu or create your own custom pizza masterpiece.</p>
+                
+                <div style="margin-top: 30px;">
+                    <h3>Why Choose Us?</h3>
+                    <div class="pizza-grid">
+                        <div class="pizza-card">
+                            <div class="pizza-image">🚚</div>
+                            <div class="pizza-info">
+                                <div class="pizza-name">Fast Delivery</div>
+                                <div class="pizza-description">Get your pizza delivered within 30-45 minutes</div>
+                            </div>
+                        </div>
+                        <div class="pizza-card">
+                            <div class="pizza-image">🍕</div>
+                            <div class="pizza-info">
+                                <div class="pizza-name">Fresh Ingredients</div>
+                                <div class="pizza-description">Made with the freshest ingredients and authentic recipes</div>
+                            </div>
+                        </div>
+                        <div class="pizza-card">
+                            <div class="pizza-image">🎨</div>
+                            <div class="pizza-info">
+                                <div class="pizza-name">Custom Pizzas</div>
+                                <div class="pizza-description">Create your own pizza with our custom pizza builder</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Menu Section -->
+            <div id="menu" class="section">
+                <h2>Our Pizza Menu 🍕</h2>
+                <p>Choose from our delicious selection of pizzas</p>
+                
+                <div class="pizza-grid">
+                    <div class="pizza-card">
+                        <div class="pizza-image">
+                            🍕
+                            <div class="pizza-category">VEG</div>
+                        </div>
+                        <div class="pizza-info">
+                            <div class="pizza-name">Margherita</div>
+                            <div class="pizza-description">Classic pizza with tomato sauce, mozzarella, and fresh basil</div>
+                            <div class="pizza-price">₹299</div>
+                            <button class="add-to-cart" onclick="addToCart('Margherita', 299)">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="pizza-card">
+                        <div class="pizza-image">
+                            🍕
+                            <div class="pizza-category">NON-VEG</div>
+                        </div>
+                        <div class="pizza-info">
+                            <div class="pizza-name">Pepperoni</div>
+                            <div class="pizza-description">Spicy pepperoni with mozzarella cheese on tomato sauce</div>
+                            <div class="pizza-price">₹399</div>
+                            <button class="add-to-cart" onclick="addToCart('Pepperoni', 399)">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="pizza-card">
+                        <div class="pizza-image">
+                            🍕
+                            <div class="pizza-category">VEG</div>
+                        </div>
+                        <div class="pizza-info">
+                            <div class="pizza-name">Veggie Supreme</div>
+                            <div class="pizza-description">Loaded with bell peppers, mushrooms, onions, olives, and tomatoes</div>
+                            <div class="pizza-price">₹449</div>
+                            <button class="add-to-cart" onclick="addToCart('Veggie Supreme', 449)">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="pizza-card">
+                        <div class="pizza-image">
+                            🍕
+                            <div class="pizza-category">NON-VEG</div>
+                        </div>
+                        <div class="pizza-info">
+                            <div class="pizza-name">BBQ Chicken</div>
+                            <div class="pizza-description">Grilled chicken with BBQ sauce, red onions, and cilantro</div>
+                            <div class="pizza-price">₹499</div>
+                            <button class="add-to-cart" onclick="addToCart('BBQ Chicken', 499)">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="pizza-card">
+                        <div class="pizza-image">
+                            🍕
+                            <div class="pizza-category">VEGAN</div>
+                        </div>
+                        <div class="pizza-info">
+                            <div class="pizza-name">Vegan Delight</div>
+                            <div class="pizza-description">Plant-based pizza with vegan cheese, spinach, and mushrooms</div>
+                            <div class="pizza-price">₹429</div>
+                            <button class="add-to-cart" onclick="addToCart('Vegan Delight', 429)">Add to Cart</button>
+                        </div>
+                    </div>
+
+                    <div class="pizza-card">
+                        <div class="pizza-image">
+                            🍕
+                            <div class="pizza-category">NON-VEG</div>
+                        </div>
+                        <div class="pizza-info">
+                            <div class="pizza-name">Meat Lovers</div>
+                            <div class="pizza-description">Pepperoni, sausage, bacon, and ham with extra cheese</div>
+                            <div class="pizza-price">₹549</div>
+                            <button class="add-to-cart" onclick="addToCart('Meat Lovers', 549)">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Pizza Section -->
+            <div id="custom" class="section">
+                <h2>Build Your Custom Pizza 🎨</h2>
+                <p>Create your perfect pizza with our fresh ingredients</p>
+
+                <div class="custom-pizza">
+                    <div class="custom-section">
+                        <h3>1. Choose Your Base</h3>
+                        <div class="options-grid">
+                            <div class="option-card" onclick="selectOption(this, 'base', 'Thin Crust', 50)">
+                                <div class="option-name">Thin Crust</div>
+                                <div class="option-price">₹50</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'base', 'Thick Crust', 60)">
+                                <div class="option-name">Thick Crust</div>
+                                <div class="option-price">₹60</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'base', 'Whole Wheat', 55)">
+                                <div class="option-name">Whole Wheat</div>
+                                <div class="option-price">₹55</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'base', 'Gluten Free', 70)">
+                                <div class="option-name">Gluten Free</div>
+                                <div class="option-price">₹70</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="custom-section">
+                        <h3>2. Choose Your Sauce</h3>
+                        <div class="options-grid">
+                            <div class="option-card" onclick="selectOption(this, 'sauce', 'Tomato Sauce', 15)">
+                                <div class="option-name">Tomato Sauce</div>
+                                <div class="option-price">₹15</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'sauce', 'BBQ Sauce', 20)">
+                                <div class="option-name">BBQ Sauce</div>
+                                <div class="option-price">₹20</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'sauce', 'Pesto Sauce', 25)">
+                                <div class="option-name">Pesto Sauce</div>
+                                <div class="option-price">₹25</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'sauce', 'Alfredo Sauce', 22)">
+                                <div class="option-name">Alfredo Sauce</div>
+                                <div class="option-price">₹22</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="custom-section">
+                        <h3>3. Choose Your Cheese</h3>
+                        <div class="options-grid">
+                            <div class="option-card" onclick="selectOption(this, 'cheese', 'Mozzarella', 30)">
+                                <div class="option-name">Mozzarella</div>
+                                <div class="option-price">₹30</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'cheese', 'Cheddar', 28)">
+                                <div class="option-name">Cheddar</div>
+                                <div class="option-price">₹28</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'cheese', 'Parmesan', 35)">
+                                <div class="option-name">Parmesan</div>
+                                <div class="option-price">₹35</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'cheese', 'Vegan Cheese', 40)">
+                                <div class="option-name">Vegan Cheese</div>
+                                <div class="option-price">₹40</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="custom-section">
+                        <h3>4. Add Vegetables (Optional)</h3>
+                        <div class="options-grid">
+                            <div class="option-card" onclick="toggleOption(this, 'veggie', 'Bell Peppers', 8)">
+                                <div class="option-name">Bell Peppers</div>
+                                <div class="option-price">₹8</div>
+                            </div>
+                            <div class="option-card" onclick="toggleOption(this, 'veggie', 'Mushrooms', 12)">
+                                <div class="option-name">Mushrooms</div>
+                                <div class="option-price">₹12</div>
+                            </div>
+                            <div class="option-card" onclick="toggleOption(this, 'veggie', 'Onions', 6)">
+                                <div class="option-name">Onions</div>
+                                <div class="option-price">₹6</div>
+                            </div>
+                            <div class="option-card" onclick="toggleOption(this, 'veggie', 'Olives', 15)">
+                                <div class="option-name">Olives</div>
+                                <div class="option-price">₹15</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="custom-section">
+                        <h3>5. Add Meat (Optional)</h3>
+                        <div class="options-grid">
+                            <div class="option-card" onclick="toggleOption(this, 'meat', 'Pepperoni', 25)">
+                                <div class="option-name">Pepperoni</div>
+                                <div class="option-price">₹25</div>
+                            </div>
+                            <div class="option-card" onclick="toggleOption(this, 'meat', 'Chicken', 30)">
+                                <div class="option-name">Chicken</div>
+                                <div class="option-price">₹30</div>
+                            </div>
+                            <div class="option-card" onclick="toggleOption(this, 'meat', 'Bacon', 35)">
+                                <div class="option-name">Bacon</div>
+                                <div class="option-price">₹35</div>
+                            </div>
+                            <div class="option-card" onclick="toggleOption(this, 'meat', 'Sausage', 28)">
+                                <div class="option-name">Sausage</div>
+                                <div class="option-price">₹28</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="custom-section">
+                        <h3>6. Choose Size</h3>
+                        <div class="options-grid">
+                            <div class="option-card" onclick="selectOption(this, 'size', 'Small', 0.8)">
+                                <div class="option-name">Small</div>
+                                <div class="option-price">80% Price</div>
+                            </div>
+                            <div class="option-card selected" onclick="selectOption(this, 'size', 'Medium', 1)">
+                                <div class="option-name">Medium</div>
+                                <div class="option-price">100% Price</div>
+                            </div>
+                            <div class="option-card" onclick="selectOption(this, 'size', 'Large', 1.3)">
+                                <div class="option-name">Large</div>
+                                <div class="option-price">130% Price</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cart-summary">
+                        <h3>Your Custom Pizza</h3>
+                        <div id="custom-pizza-summary">
+                            <div class="cart-item">
+                                <span>Base: <span id="selected-base">Medium</span></span>
+                                <span>₹<span id="base-price">60</span></span>
+                            </div>
+                            <div class="cart-item">
+                                <span>Sauce: <span id="selected-sauce">Tomato Sauce</span></span>
+                                <span>₹<span id="sauce-price">15</span></span>
+                            </div>
+                            <div class="cart-item">
+                                <span>Cheese: <span id="selected-cheese">Mozzarella</span></span>
+                                <span>₹<span id="cheese-price">30</span></span>
+                            </div>
+                            <div id="veggies-summary"></div>
+                            <div id="meat-summary"></div>
+                            <div class="cart-total">
+                                Total: ₹<span id="custom-total">105</span>
+                            </div>
+                            <button class="checkout-btn" onclick="addCustomPizzaToCart()">Add Custom Pizza to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Section -->
+            <div id="cart" class="section">
+                <h2>Shopping Cart 🛒</h2>
+                <div id="cart-items">
+                    <p>Your cart is empty. Add some delicious pizzas!</p>
+                </div>
+                <div id="cart-summary" style="display: none;">
+                    <div class="cart-summary">
+                        <h3>Order Summary</h3>
+                        <div id="cart-items-list"></div>
+                        <div class="cart-total">
+                            Total: ₹<span id="cart-total">0</span>
+                        </div>
+                        <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Section -->
+            <div id="orders" class="section">
+                <h2>My Orders 📋</h2>
+                <div id="orders-list">
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-number">Order #PZ001</div>
+                            <div class="order-status">DELIVERED</div>
+                        </div>
+                        <div class="order-items">Margherita Pizza × 2</div>
+                        <div class="order-total">Total: ₹598</div>
+                    </div>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-number">Order #PZ002</div>
+                            <div class="order-status">OUT FOR DELIVERY</div>
+                        </div>
+                        <div class="order-items">Custom Pizza × 1</div>
+                        <div class="order-total">Total: ₹450</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Section -->
+            <div id="admin" class="section">
+                <h2 style="text-align: center; color: #e74c3c; margin-bottom: 10px; font-size: 2.5rem;">⚙️ Admin Dashboard</h2>
+                <p style="text-align: center; color: #666; font-size: 1.1rem; margin-bottom: 30px;">Manage your pizza delivery business</p>
+                
+                <div class="admin-dashboard">
+                    <div class="stat-card">
+                        <div class="stat-number">156</div>
+                        <div class="stat-label">Total Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">23</div>
+                        <div class="stat-label">Pending Orders</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">₹45,230</div>
+                        <div class="stat-label">Total Revenue</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">Low Stock Items</div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 20px; padding: 30px; margin: 30px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="color: #e74c3c; margin-bottom: 20px; font-size: 1.8rem;">📋 All Orders Management</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-weight: 600; color: #333; margin-right: 15px;">Filter by Status:</label>
+                        <select id="order-filter" style="padding: 8px 15px; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 14px;">
+                            <option value="">All Orders</option>
+                            <option value="pending">Pending</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="out-for-delivery">Out for Delivery</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+
+                    <div id="all-orders-list">
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div class="order-number">Order #PZ001</div>
+                                <div class="order-status" style="background: #ffc107; color: #000;">PENDING</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 15px 0;">
+                                <div>
+                                    <strong>Customer:</strong><br>
+                                    John Doe<br>
+                                    john@example.com<br>
+                                    +1234567890
+                                </div>
+                                <div>
+                                    <strong>Items:</strong><br>
+                                    Margherita Pizza × 2<br>
+                                    Custom Pizza × 1<br>
+                                    <strong>Total: ₹1,198</strong>
+                                </div>
+                                <div>
+                                    <strong>Actions:</strong><br>
+                                    <button class="btn-secondary" onclick="updateOrderStatus('PZ001', 'confirmed')" style="margin: 5px 0;">Confirm</button><br>
+                                    <button class="btn-secondary" onclick="updateOrderStatus('PZ001', 'cancelled')" style="background: #dc3545;">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div class="order-number">Order #PZ002</div>
+                                <div class="order-status" style="background: #17a2b8; color: white;">CONFIRMED</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 15px 0;">
+                                <div>
+                                    <strong>Customer:</strong><br>
+                                    Jane Smith<br>
+                                    jane@example.com<br>
+                                    +1234567891
+                                </div>
+                                <div>
+                                    <strong>Items:</strong><br>
+                                    Pepperoni Pizza × 1<br>
+                                    Veggie Supreme × 1<br>
+                                    <strong>Total: ₹848</strong>
+                                </div>
+                                <div>
+                                    <strong>Actions:</strong><br>
+                                    <button class="btn-secondary" onclick="updateOrderStatus('PZ002', 'preparing')" style="margin: 5px 0;">Start Preparing</button><br>
+                                    <button class="btn-secondary" onclick="updateOrderStatus('PZ002', 'cancelled')" style="background: #dc3545;">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div class="order-number">Order #PZ003</div>
+                                <div class="order-status" style="background: #fd7e14; color: white;">PREPARING</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 15px 0;">
+                                <div>
+                                    <strong>Customer:</strong><br>
+                                    Mike Johnson<br>
+                                    mike@example.com<br>
+                                    +1234567892
+                                </div>
+                                <div>
+                                    <strong>Items:</strong><br>
+                                    BBQ Chicken × 1<br>
+                                    Meat Lovers × 1<br>
+                                    <strong>Total: ₹1,048</strong>
+                                </div>
+                                <div>
+                                    <strong>Actions:</strong><br>
+                                    <button class="btn-secondary" onclick="updateOrderStatus('PZ003', 'out-for-delivery')" style="margin: 5px 0;">Out for Delivery</button><br>
+                                    <button class="btn-secondary" onclick="updateOrderStatus('PZ003', 'cancelled')" style="background: #dc3545;">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div class="order-number">Order #PZ004</div>
+                                <div class="order-status" style="background: #6f42c1; color: white;">OUT FOR DELIVERY</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 15px 0;">
+                                <div>
+                                    <strong>Customer:</strong><br>
+                                    Sarah Wilson<br>
+                                    sarah@example.com<br>
+                                    +1234567893
+                                </div>
+                                <div>
+                                    <strong>Items:</strong><br>
+                                    Vegan Delight × 2<br>
+                                    <strong>Total: ₹858</strong>
+                                </div>
+                                <div>
+                                    <strong>Actions:</strong><br>
+                                    <button class="btn-secondary" onclick="updateOrderStatus('PZ004', 'delivered')" style="margin: 5px 0; background: #28a745;">Mark Delivered</button><br>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div class="order-number">Order #PZ005</div>
+                                <div class="order-status" style="background: #28a745; color: white;">DELIVERED</div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin: 15px 0;">
+                                <div>
+                                    <strong>Customer:</strong><br>
+                                    David Brown<br>
+                                    david@example.com<br>
+                                    +1234567894
+                                </div>
+                                <div>
+                                    <strong>Items:</strong><br>
+                                    Custom Pizza × 1<br>
+                                    <strong>Total: ₹450</strong>
+                                </div>
+                                <div>
+                                    <strong>Status:</strong><br>
+                                    ✅ Order Completed<br>
+                                    <small>Delivered on: Today 2:30 PM</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 20px; padding: 30px; margin: 30px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <h3 style="color: #e74c3c; margin-bottom: 20px; font-size: 1.8rem;">📦 Inventory Status</h3>
+                    
+                    <div class="low-stock-alert">
+                        ⚠️ Low Stock Alert: 5 items are running low on stock
+                    </div>
+                    
+                    <div class="inventory-grid">
+                        <div class="inventory-item low-stock">
+                            <div class="inventory-name">Thin Crust</div>
+                            <div class="inventory-stock">Stock: 15 (Threshold: 20)</div>
+                        </div>
+                        <div class="inventory-item low-stock">
+                            <div class="inventory-name">Mozzarella</div>
+                            <div class="inventory-stock">Stock: 18 (Threshold: 25)</div>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-name">Tomato Sauce</div>
+                            <div class="inventory-stock">Stock: 45 (Threshold: 30)</div>
+                        </div>
+                        <div class="inventory-item">
+                            <div class="inventory-name">Pepperoni</div>
+                            <div class="inventory-stock">Stock: 32 (Threshold: 8)</div>
+                        </div>
+                        <div class="inventory-item low-stock">
+                            <div class="inventory-name">Bell Peppers</div>
+                            <div class="inventory-stock">Stock: 8 (Threshold: 10)</div>
+                        </div>
+                        <div class="inventory-item low-stock">
+                            <div class="inventory-name">Mushrooms</div>
+                            <div class="inventory-stock">Stock: 6 (Threshold: 8)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let cart = [];
+        let currentUser = null;
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let customPizza = {
+            base: { name: 'Thick Crust', price: 60 },
+            sauce: { name: 'Tomato Sauce', price: 15 },
+            cheese: { name: 'Mozzarella', price: 30 },
+            veggies: [],
+            meat: [],
+            size: { name: 'Medium', multiplier: 1 }
+        };
+
+        // Initialize with demo users
+        if (users.length === 0) {
+            users = [
+                {
+                    id: 1,
+                    name: 'Admin User',
+                    email: 'admin@pizzadelivery.com',
+                    password: 'admin123',
+                    phone: '+1234567890',
+                    role: 'admin',
+                    isEmailVerified: true,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    name: 'Test User',
+                    email: 'user@example.com',
+                    password: 'user123',
+                    phone: '+1234567891',
+                    role: 'user',
+                    isEmailVerified: true,
+                    createdAt: new Date().toISOString()
+                }
+            ];
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        // Check if user is logged in on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateNavigation();
+                showSection('home');
+            } else {
+                showSection('home');
+            }
+            updateCustomPizzaSummary();
+        });
+
+        // Authentication functions
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Skip email verification for demo purposes - auto-verify
+                if (!user.isEmailVerified) {
+                    user.isEmailVerified = true;
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+                
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateNavigation();
+                updateHomeWelcome();
+                showSection('home');
+                alert(`Welcome back, ${user.name}!`);
+            } else {
+                alert('Invalid email or password. Please try again.');
+            }
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+
+            const user = users.find(u => u.email === email && u.password === password && u.role === 'admin');
+            
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateNavigation();
+                updateHomeWelcome();
+                showSection('admin');
+                alert(`Welcome to Admin Dashboard, ${user.name}!`);
+            } else {
+                alert('Invalid admin credentials. Please check your email and password.');
+            }
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const phone = document.getElementById('register-phone').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+
+            // Validation
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match.');
+                return;
+            }
+
+            if (users.find(u => u.email === email)) {
+                alert('An account with this email already exists.');
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: users.length + 1,
+                name: name,
+                email: email,
+                password: password,
+                phone: phone,
+                role: 'user',
+                isEmailVerified: true, // Auto-verify for demo
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Auto-login after registration
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            updateNavigation();
+            updateHomeWelcome();
+            showSection('home');
+            alert(`Account created successfully! Welcome, ${name}!`);
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            
+            const user = users.find(u => u.email === email);
+            if (user) {
+                alert('Password reset link has been sent to your email address.');
+                showSection('login');
+            } else {
+                alert('No account found with this email address.');
+            }
+        }
+
+        function resendVerification() {
+            alert('Verification email has been resent. Please check your inbox.');
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            cart = [];
+            updateNavigation();
+            updateHomeWelcome();
+            showSection('home');
+            alert('You have been logged out successfully.');
+        }
+
+        function updateNavigation() {
+            const loginBtn = document.getElementById('login-btn');
+            const registerBtn = document.getElementById('register-btn');
+            const adminLoginBtn = document.getElementById('admin-login-btn');
+            const menuBtn = document.getElementById('menu-btn');
+            const customBtn = document.getElementById('custom-btn');
+            const cartBtn = document.getElementById('cart-btn');
+            const ordersBtn = document.getElementById('orders-btn');
+            const adminBtn = document.getElementById('admin-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+
+            if (currentUser) {
+                // User is logged in
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                adminLoginBtn.style.display = 'none';
+                menuBtn.style.display = 'inline-block';
+                customBtn.style.display = 'inline-block';
+                cartBtn.style.display = 'inline-block';
+                ordersBtn.style.display = 'inline-block';
+                logoutBtn.style.display = 'inline-block';
+                
+                if (currentUser.role === 'admin') {
+                    adminBtn.style.display = 'inline-block';
+                } else {
+                    adminBtn.style.display = 'none';
+                }
+            } else {
+                // User is not logged in
+                loginBtn.style.display = 'inline-block';
+                registerBtn.style.display = 'inline-block';
+                adminLoginBtn.style.display = 'inline-block';
+                menuBtn.style.display = 'none';
+                customBtn.style.display = 'none';
+                cartBtn.style.display = 'none';
+                ordersBtn.style.display = 'none';
+                adminBtn.style.display = 'none';
+                logoutBtn.style.display = 'none';
+            }
+        }
+
+        // Navigation functions
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active class to clicked button
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Check authentication for protected sections
+            const protectedSections = ['menu', 'custom', 'cart', 'orders', 'admin'];
+            if (protectedSections.includes(sectionId) && !currentUser) {
+                alert('Please login to access this section.');
+                showSection('login');
+                return;
+            }
+            
+            // Check admin access
+            if (sectionId === 'admin' && currentUser && currentUser.role !== 'admin') {
+                alert('Access denied. Admin privileges required.');
+                showSection('home');
+                return;
+            }
+            
+            // Update cart display if cart section is shown
+            if (sectionId === 'cart') {
+                updateCartDisplay();
+            }
+        }
+
+        // Cart functions
+        function addToCart(name, price) {
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ name, price, quantity: 1 });
+            }
+            updateCartDisplay();
+            alert(`${name} added to cart!`);
+        }
+
+        function updateCartDisplay() {
+            const cartItemsDiv = document.getElementById('cart-items');
+            const cartSummaryDiv = document.getElementById('cart-summary');
+            const cartItemsListDiv = document.getElementById('cart-items-list');
+            const cartTotalSpan = document.getElementById('cart-total');
+
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = '<p>Your cart is empty. Add some delicious pizzas!</p>';
+                cartSummaryDiv.style.display = 'none';
+            } else {
+                cartItemsDiv.innerHTML = '';
+                cartSummaryDiv.style.display = 'block';
+                
+                let total = 0;
+                cartItemsListDiv.innerHTML = '';
+                
+                cart.forEach(item => {
+                    const itemTotal = item.price * item.quantity;
+                    total += itemTotal;
+                    
+                    const cartItemDiv = document.createElement('div');
+                    cartItemDiv.className = 'cart-item';
+                    cartItemDiv.innerHTML = `
+                        <span>${item.name} × ${item.quantity}</span>
+                        <span>₹${itemTotal}</span>
+                    `;
+                    cartItemsListDiv.appendChild(cartItemDiv);
+                });
+                
+                cartTotalSpan.textContent = total;
+            }
+        }
+
+        // Custom pizza functions
+        function selectOption(element, type, name, price) {
+            // Remove selected class from siblings
+            element.parentElement.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked element
+            element.classList.add('selected');
+            
+            // Update custom pizza object
+            if (type === 'size') {
+                customPizza[type] = { name, multiplier: price };
+            } else {
+                customPizza[type] = { name, price };
+            }
+            
+            updateCustomPizzaSummary();
+        }
+
+        function toggleOption(element, type, name, price) {
+            element.classList.toggle('selected');
+            
+            if (element.classList.contains('selected')) {
+                customPizza[type].push({ name, price });
+            } else {
+                customPizza[type] = customPizza[type].filter(item => item.name !== name);
+            }
+            
+            updateCustomPizzaSummary();
+        }
+
+        function updateCustomPizzaSummary() {
+            document.getElementById('selected-base').textContent = customPizza.base.name;
+            document.getElementById('base-price').textContent = customPizza.base.price;
+            document.getElementById('selected-sauce').textContent = customPizza.sauce.name;
+            document.getElementById('sauce-price').textContent = customPizza.sauce.price;
+            document.getElementById('selected-cheese').textContent = customPizza.cheese.name;
+            document.getElementById('cheese-price').textContent = customPizza.cheese.price;
+            
+            // Update veggies summary
+            const veggiesSummary = document.getElementById('veggies-summary');
+            veggiesSummary.innerHTML = '';
+            customPizza.veggies.forEach(veggie => {
+                const veggieDiv = document.createElement('div');
+                veggieDiv.className = 'cart-item';
+                veggieDiv.innerHTML = `
+                    <span>${veggie.name}</span>
+                    <span>₹${veggie.price}</span>
+                `;
+                veggiesSummary.appendChild(veggieDiv);
+            });
+            
+            // Update meat summary
+            const meatSummary = document.getElementById('meat-summary');
+            meatSummary.innerHTML = '';
+            customPizza.meat.forEach(meat => {
+                const meatDiv = document.createElement('div');
+                meatDiv.className = 'cart-item';
+                meatDiv.innerHTML = `
+                    <span>${meat.name}</span>
+                    <span>₹${meat.price}</span>
+                `;
+                meatSummary.appendChild(meatDiv);
+            });
+            
+            // Calculate total
+            let total = customPizza.base.price + customPizza.sauce.price + customPizza.cheese.price;
+            customPizza.veggies.forEach(veggie => total += veggie.price);
+            customPizza.meat.forEach(meat => total += meat.price);
+            total *= customPizza.size.multiplier;
+            
+            document.getElementById('custom-total').textContent = Math.round(total);
+        }
+
+        function addCustomPizzaToCart() {
+            if (!customPizza.base || !customPizza.sauce || !customPizza.cheese) {
+                alert('Please select base, sauce, and cheese!');
+                return;
+            }
+            
+            let total = customPizza.base.price + customPizza.sauce.price + customPizza.cheese.price;
+            customPizza.veggies.forEach(veggie => total += veggie.price);
+            customPizza.meat.forEach(meat => total += meat.price);
+            total *= customPizza.size.multiplier;
+            
+            cart.push({
+                name: 'Custom Pizza',
+                price: Math.round(total),
+                quantity: 1
+            });
+            
+            updateCartDisplay();
+            alert('Custom pizza added to cart!');
+        }
+
+        function proceedToCheckout() {
+            alert('Checkout functionality would be implemented here with payment gateway integration!');
+        }
+
+        // Admin order management functions
+        function updateOrderStatus(orderId, newStatus) {
+            const statusMap = {
+                'confirmed': { text: 'CONFIRMED', color: '#17a2b8', bg: '#17a2b8' },
+                'preparing': { text: 'PREPARING', color: 'white', bg: '#fd7e14' },
+                'out-for-delivery': { text: 'OUT FOR DELIVERY', color: 'white', bg: '#6f42c1' },
+                'delivered': { text: 'DELIVERED', color: 'white', bg: '#28a745' },
+                'cancelled': { text: 'CANCELLED', color: 'white', bg: '#dc3545' }
+            };
+
+            // Find the order card and update its status
+            const orderCards = document.querySelectorAll('.order-card');
+            orderCards.forEach(card => {
+                const orderNumber = card.querySelector('.order-number').textContent;
+                if (orderNumber.includes(orderId)) {
+                    const statusElement = card.querySelector('.order-status');
+                    const statusInfo = statusMap[newStatus];
+                    
+                    if (statusInfo) {
+                        statusElement.textContent = statusInfo.text;
+                        statusElement.style.background = statusInfo.bg;
+                        statusElement.style.color = statusInfo.color;
+                        
+                        // Update actions based on new status
+                        const actionsDiv = card.querySelector('div:last-child');
+                        if (newStatus === 'delivered') {
+                            actionsDiv.innerHTML = `
+                                <strong>Status:</strong><br>
+                                ✅ Order Completed<br>
+                                <small>Delivered on: ${new Date().toLocaleString()}</small>
+                            `;
+                        } else if (newStatus === 'cancelled') {
+                            actionsDiv.innerHTML = `
+                                <strong>Status:</strong><br>
+                                ❌ Order Cancelled<br>
+                                <small>Cancelled on: ${new Date().toLocaleString()}</small>
+                            `;
+                        }
+                        
+                        alert(`Order ${orderId} status updated to ${statusInfo.text}`);
+                    }
+                }
+            });
+        }
+
+        // Update home welcome message
+        function updateHomeWelcome() {
+            const welcomeElement = document.getElementById('home-welcome');
+            const messageElement = document.getElementById('home-message');
+            
+            if (currentUser) {
+                welcomeElement.textContent = `Welcome back, ${currentUser.name}! 👋`;
+                messageElement.textContent = `Ready to order some delicious pizza? Browse our menu or create your own custom pizza masterpiece.`;
+            } else {
+                welcomeElement.textContent = 'Welcome to Pizza Delivery! 👋';
+                messageElement.textContent = 'Choose from our delicious pizza menu or create your own custom pizza masterpiece.';
+            }
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCustomPizzaSummary();
+            updateHomeWelcome();
+        });
+    </script>
+</body>
+</html>
